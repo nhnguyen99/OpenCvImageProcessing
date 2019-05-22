@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">FinalSolution</string>
+    <string name="Programmer">Programmer</string>
+    <string name="ManagerView">manager view</string>
+    <string name="takePicture">take picture</string>
+    <string name="apply">apply</string>
+    <string name="height">height</string>
+    <string name="waist">waist</string>
+    <string name="hip">hip</string>
+    <string name="next">next</string>
+
+    <string-array name="imageProcessingMethod">
+        <item>original</item>
+        <item>Ostu threshold</item>
+        <item>image gradient</item>
+        <item>contours</item>
+        <item>Ostu threshold slow "don't use" </item>
+        <item>blur</item>
+        <item>median blur</item>
+        <item>dilate</item>
+    </string-array>
+</resources>
