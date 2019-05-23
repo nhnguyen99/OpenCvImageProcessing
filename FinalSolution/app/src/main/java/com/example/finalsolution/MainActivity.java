@@ -13,7 +13,9 @@ import android.widget.ImageView;
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.Scalar;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         programmerView = findViewById(R.id.programmerView);
         ManagerView = findViewById(R.id.managerView);
-
+        selectPhoto = findViewById(R.id.takePicture);
         programmerView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -43,8 +45,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        selectPhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectPhoto.setText("not implement");
+            }
+        });
+
     }
-    //load OpenCV
+
+//    load OpenCV
     private BaseLoaderCallback mOpenCVCallBack = new
             BaseLoaderCallback(this) {
                 @Override
@@ -70,6 +80,9 @@ public class MainActivity extends AppCompatActivity {
             mOpenCVCallBack.onManagerConnected(LoaderCallbackInterface.SUCCESS);
         }
 
+
     }
+
+
 
 }
