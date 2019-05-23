@@ -18,5 +18,7 @@
         <item>blur</item>
         <item>median blur</item>
         <item>dilate</item>
+        <item>gradient + threshold</item>
+        <item>canny contours + threshold</item>
     </string-array>
 </resources>

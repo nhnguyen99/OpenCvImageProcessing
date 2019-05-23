@@ -3,18 +3,21 @@ package com.example.finalsolution;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.provider.ContactsContract;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.Switch;
+
 import android.widget.Toast;
 
-import org.opencv.android.BaseLoaderCallback;
-import org.opencv.android.LoaderCallbackInterface;
+
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
@@ -34,6 +37,15 @@ public class programmer extends AppCompatActivity {
     private int method = 0;
     String[] imageProcessingMethod;
     ImageView imageView;
+    int[] images = {R.drawable.sample,
+            R.drawable.pic1,
+            R.drawable.pic2,
+            R.drawable.pic3,
+            R.drawable.pic4,
+            R.drawable.pic5,
+            R.drawable.pic6,
+    };
+    int current_image;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +54,7 @@ public class programmer extends AppCompatActivity {
         Spinner spinner = findViewById(R.id.spinner1);
         apply = findViewById(R.id.apply);
         imageView = findViewById(R.id.imageView);
+
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -57,6 +70,15 @@ public class programmer extends AppCompatActivity {
             }
         });
 
+        imageView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                current_image++;
+                current_image = current_image % images.length;
+                imageView.setImageResource(images[current_image]);
+                return true;
+            }
+        });
 
         apply.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,6 +113,12 @@ public class programmer extends AppCompatActivity {
                     case 7:
                         dilate();
                         break;
+                    case 8:
+                        gradientThreshold();
+                        break;
+                    case 9:
+                        cannyContoursThreshold();
+                        break;
                         default:
                             setOriginal();
                 }
@@ -101,12 +129,12 @@ public class programmer extends AppCompatActivity {
     }
 
     private void setOriginal(){
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.sample);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(),images[current_image]);
         imageView.setImageBitmap(bitmap);
     }
 
     private void ostuThreshold(){
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.sample);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(),images[current_image]);
         Mat Rgba = new Mat();
         Mat ostuMat = new Mat();
         Utils.bitmapToMat(bitmap,Rgba);
@@ -124,7 +152,7 @@ public class programmer extends AppCompatActivity {
         Mat abs_grad_x = new Mat();
         Mat grad_y = new Mat();
         Mat abs_grad_y = new Mat();
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(),R.drawable.sample);
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(),images[current_image]);
         Mat originalMat = new Mat();
         Utils.bitmapToMat(bitmap,originalMat);
         Imgproc.cvtColor(originalMat, grayMat,Imgproc.COLOR_RGBA2GRAY);
@@ -139,7 +167,7 @@ public class programmer extends AppCompatActivity {
     }
 
     private void cannyContours(){
-        Bitmap originalbitmap = BitmapFactory.decodeResource(getResources(),R.drawable.sample);
+        Bitmap originalbitmap = BitmapFactory.decodeResource(getResources(),images[current_image]);
         Mat originalMat = new Mat();
         Utils.bitmapToMat(originalbitmap,originalMat);
 
@@ -167,7 +195,7 @@ public class programmer extends AppCompatActivity {
     }
 
     private void blur(){
-        Bitmap originalbitmap = BitmapFactory.decodeResource(getResources(),R.drawable.sample);
+        Bitmap originalbitmap = BitmapFactory.decodeResource(getResources(),images[current_image]);
         Mat mat = new Mat();
         Utils.bitmapToMat(originalbitmap,mat);
         Imgproc.blur(mat,mat,new Size(10,10));
@@ -176,7 +204,7 @@ public class programmer extends AppCompatActivity {
     }
 
     private void medianBlur(){
-        Bitmap originalbitmap = BitmapFactory.decodeResource(getResources(),R.drawable.sample);
+        Bitmap originalbitmap = BitmapFactory.decodeResource(getResources(),images[current_image]);
         Mat mat = new Mat();
         Utils.bitmapToMat(originalbitmap,mat);
         Imgproc.medianBlur(mat,mat,3);
@@ -185,7 +213,7 @@ public class programmer extends AppCompatActivity {
     }
 
     private void dilate(){
-        Bitmap originalbitmap = BitmapFactory.decodeResource(getResources(),R.drawable.sample);
+        Bitmap originalbitmap = BitmapFactory.decodeResource(getResources(),images[current_image]);
         Mat mat = new Mat();
         Utils.bitmapToMat(originalbitmap,mat);
         Imgproc.dilate(mat,mat,Imgproc.getStructuringElement(Imgproc.MORPH_RECT,new Size(3,3)));
@@ -308,6 +336,57 @@ public class programmer extends AppCompatActivity {
 
         imageView.setImageBitmap(BWimg);
 //        return BWimg;
+    }
+
+    private void gradientThreshold(){
+        Mat grayMat = new Mat();
+        Mat sobel = new Mat();
+        Mat grad_x = new Mat();
+        Mat abs_grad_x = new Mat();
+        Mat grad_y = new Mat();
+        Mat abs_grad_y = new Mat();
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(),images[current_image]);
+        Mat originalMat = new Mat();
+        Utils.bitmapToMat(bitmap,originalMat);
+        Imgproc.cvtColor(originalMat, grayMat,Imgproc.COLOR_RGBA2GRAY);
+        Imgproc.Sobel(grayMat,grad_x,CvType.CV_16S,1,0,3,1,0);
+        Imgproc.Sobel(grayMat,grad_y,CvType.CV_16S,0,1,3,1,0);
+        Core.convertScaleAbs(grad_x,abs_grad_x);
+        Core.convertScaleAbs(grad_y,abs_grad_y);
+        Core.addWeighted(abs_grad_x,0.5,abs_grad_y,0.5,1,sobel);
+        Imgproc.threshold(sobel,sobel,0,255,Imgproc.THRESH_OTSU);
+        Bitmap currentBitmap = Bitmap.createBitmap(bitmap.getWidth(),bitmap.getHeight(),Bitmap.Config.RGB_565);
+        Utils.matToBitmap(sobel,currentBitmap);
+        imageView.setImageBitmap(currentBitmap);
+    }
+
+    private void cannyContoursThreshold(){
+        Bitmap originalbitmap = BitmapFactory.decodeResource(getResources(),images[current_image]);
+        Mat originalMat = new Mat();
+        Utils.bitmapToMat(originalbitmap,originalMat);
+
+        Mat grayMat = new Mat();
+        Mat cannyEdges = new Mat();
+        Mat hierarchy = new Mat();
+
+        List<MatOfPoint> contourList = new ArrayList<MatOfPoint>();
+
+        Imgproc.cvtColor(originalMat,grayMat,Imgproc.COLOR_RGBA2GRAY);
+        Imgproc.Canny(grayMat,cannyEdges,10,100);
+        Imgproc.findContours(cannyEdges,contourList,hierarchy,Imgproc.RETR_LIST,Imgproc.CHAIN_APPROX_SIMPLE);
+
+        Mat contours = new Mat();
+        contours.create(cannyEdges.rows(),cannyEdges.cols(),CvType.CV_8UC3);
+        Random r = new Random();
+
+        for (int i = 0; i< contourList.size();i++){
+            Imgproc.drawContours(contours,contourList,i,new Scalar(r.nextInt(255),r.nextInt(255),r.nextInt(255)),-1);
+        }
+
+        Imgproc.threshold(cannyEdges,contours,0,255,Imgproc.THRESH_OTSU);
+        Bitmap currentBitmap = Bitmap.createBitmap(originalbitmap.getWidth(),originalbitmap.getHeight(),Bitmap.Config.RGB_565);
+        Utils.matToBitmap(contours,currentBitmap);
+        imageView.setImageBitmap(currentBitmap);
     }
 
 }
