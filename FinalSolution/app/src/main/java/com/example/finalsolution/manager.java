@@ -195,7 +195,9 @@ public class manager extends AppCompatActivity {
         List<MatOfPoint> contourList = new ArrayList<MatOfPoint>();
         Imgproc.cvtColor(originalMat,grayMat,Imgproc.COLOR_RGBA2GRAY);
         Imgproc.erode(grayMat,grayMat,Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE,new Size(5,5)));
-        Imgproc.Canny(grayMat,cannyEdges,10,100);
+        Imgproc.Canny(grayMat,cannyEdges,100,120);//change the threshold to fit different image
+        Imgproc.dilate(cannyEdges,cannyEdges,Imgproc.getStructuringElement(Imgproc.MORPH_RECT,new Size(3,3)));
+        Imgproc.erode(cannyEdges,cannyEdges,Imgproc.getStructuringElement(Imgproc.MORPH_ELLIPSE,new Size(5,5)));
         Imgproc.findContours(cannyEdges,contourList,hierarchy,Imgproc.RETR_LIST,Imgproc.CHAIN_APPROX_SIMPLE);
 
         Mat contours = new Mat();
