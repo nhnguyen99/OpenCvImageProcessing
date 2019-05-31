@@ -21,12 +21,17 @@ import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.Point;
+import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
+import org.opencv.core.TermCriteria;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class programmer extends AppCompatActivity {
@@ -42,6 +47,32 @@ public class programmer extends AppCompatActivity {
             R.drawable.pic4,
             R.drawable.pic5,
             R.drawable.pic6,
+            R.drawable.pic7,
+            R.drawable.pic8,
+            R.drawable.pic9,
+            R.drawable.pic10,
+            R.drawable.pic11,
+            R.drawable.pic12,
+            R.drawable.pic13,
+            R.drawable.pic14,
+            R.drawable.pic15,
+            R.drawable.pic16,
+            R.drawable.pic17,
+            R.drawable.pic18,
+            R.drawable.pic19,
+            R.drawable.pic20,
+            R.drawable.pic21,
+            R.drawable.pic22,
+            R.drawable.pic23,
+            R.drawable.pic24,
+            R.drawable.pic25,
+            R.drawable.pic26,
+            R.drawable.pic27,
+            R.drawable.pic28,
+            R.drawable.pic29,
+            R.drawable.pic30,
+            R.drawable.pic31
+
     };
     int current_image;
     @Override
@@ -116,6 +147,9 @@ public class programmer extends AppCompatActivity {
                         break;
                     case 9:
                         cannyContoursThreshold();
+                        break;
+                    case 10:
+                        thresholdCannyContours();
                         break;
                         default:
                             setOriginal();
@@ -219,7 +253,7 @@ public class programmer extends AppCompatActivity {
         imageView.setImageBitmap(originalbitmap);
     }
     private void ostuThresholdSlow(){
-        Bitmap original = BitmapFactory.decodeResource(getResources(),R.drawable.sample);
+        Bitmap original = BitmapFactory.decodeResource(getResources(),images[current_image]);
         Bitmap BWimg = Bitmap.createBitmap(original.getWidth(), original.getHeight(), original.getConfig());
 
         int width = original.getWidth();
@@ -233,7 +267,7 @@ public class programmer extends AppCompatActivity {
         int np, ImgPix = 0, fth = 0;
 
         // pixel check for histogram //
-        for (int x = 0; x < width; x++) {
+        for (int x = 0; x < width ; x++) {
             for (int y = 0; y < height; y++) {
 
                 colorPixel = original.getPixel(x, y);
@@ -370,7 +404,7 @@ public class programmer extends AppCompatActivity {
         List<MatOfPoint> contourList = new ArrayList<MatOfPoint>();
 
         Imgproc.cvtColor(originalMat,grayMat,Imgproc.COLOR_RGBA2GRAY);
-        Imgproc.Canny(grayMat,cannyEdges,10,100);
+        Imgproc.Canny(grayMat,cannyEdges,50,100);
         Imgproc.findContours(cannyEdges,contourList,hierarchy,Imgproc.RETR_LIST,Imgproc.CHAIN_APPROX_SIMPLE);
 
         Mat contours = new Mat();
@@ -385,6 +419,73 @@ public class programmer extends AppCompatActivity {
         Bitmap currentBitmap = Bitmap.createBitmap(originalbitmap.getWidth(),originalbitmap.getHeight(),Bitmap.Config.RGB_565);
         Utils.matToBitmap(contours,currentBitmap);
         imageView.setImageBitmap(currentBitmap);
+    }
+
+
+//    public void k_Mean(){
+//        Bitmap bitmap = BitmapFactory.decodeResource(getResources(),images[current_image]);
+//        Mat img = new Mat();
+//        Utils.bitmapToMat(bitmap,img);
+//
+//        Imgproc.cvtColor(img,img,);
+//        int k = 2;
+//        Mat clusters = cluster(img, k).get(0);
+//
+//        Utils.matToBitmap(clusters,bitmap);
+//
+//
+//        imageView.setImageBitmap(bitmap);
+//    }
+//
+//    public static List<Mat> cluster(Mat cutout, int k) {
+//        Mat samples = cutout.reshape(1, cutout.cols() * cutout.rows());
+//        Mat samples32f = new Mat();
+//        samples.convertTo(samples32f, CvType.CV_32F, 1.0 / 255.0);
+//        Mat labels = new Mat();
+//        TermCriteria criteria = new TermCriteria(TermCriteria.COUNT, 100, 1);
+//        Mat centers = new Mat();
+//        Core.kmeans(samples32f, k, labels, criteria, 1, Core.KMEANS_PP_CENTERS, centers);
+//        return showClusters(cutout, labels, centers);
+//    }
+//    private static List<Mat> showClusters (Mat cutout, Mat labels, Mat centers) {
+//        centers.convertTo(centers, CvType.CV_8UC1, 255.0);
+//        centers.reshape(3);
+//        List<Mat> clusters = new ArrayList<Mat>();
+//        for(int i = 0; i < centers.rows(); i++) {
+//            clusters.add(Mat.zeros(cutout.size(), cutout.type()));
+//        }
+//        Map<Integer, Integer> counts = new HashMap<Integer, Integer>();
+//        for(int i = 0; i < centers.rows(); i++) counts.put(i, 0);
+//        int rows = 0;
+//        for(int y = 0; y < cutout.rows(); y++) {
+//            for(int x = 0; x < cutout.cols(); x++) {
+//                int label = (int)labels.get(rows, 0)[0];
+//                int r = (int)centers.get(label, 2)[0];
+//                int g = (int)centers.get(label, 1)[0];
+//                int b = (int)centers.get(label, 0)[0];
+//                clusters.get(label).put(y, x, b, g, r);
+//                rows++;
+//            }
+//        }
+//        return clusters;
+//    }
+
+
+    private void thresholdCannyContours(){
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(),images[current_image]);
+        Mat Rgba = new Mat();
+        Mat ostuMat = new Mat();
+
+        Rect rectCrop = new Rect();
+
+        Utils.bitmapToMat(bitmap,Rgba);
+        Imgproc.cvtColor(Rgba,ostuMat,Imgproc.COLOR_RGBA2GRAY,0);
+        Imgproc.threshold(ostuMat,ostuMat,100,255,Imgproc.THRESH_BINARY);
+
+
+        Bitmap outputhBitmap = Bitmap.createBitmap(bitmap.getWidth(),bitmap.getHeight(),Bitmap.Config.RGB_565);
+        Utils.matToBitmap(ostuMat,outputhBitmap);
+        imageView.setImageBitmap(outputhBitmap);
     }
 
 }

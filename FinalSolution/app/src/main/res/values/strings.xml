@@ -20,5 +20,6 @@
         <item>dilate</item>
         <item>gradient + threshold</item>
         <item>canny contours + threshold</item>
+        <item>threshold + CannyContours</item>
     </string-array>
 </resources>

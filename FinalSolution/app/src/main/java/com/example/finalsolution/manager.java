@@ -8,7 +8,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -38,12 +37,38 @@ public class manager extends AppCompatActivity {
             R.drawable.pic4,
             R.drawable.pic5,
             R.drawable.pic6,
+            R.drawable.pic7,
+            R.drawable.pic8,
+            R.drawable.pic9,
+            R.drawable.pic10,
+            R.drawable.pic11,
+            R.drawable.pic12,
+            R.drawable.pic13,
+            R.drawable.pic14,
+            R.drawable.pic15,
+            R.drawable.pic16,
+            R.drawable.pic17,
+            R.drawable.pic18,
+            R.drawable.pic19,
+            R.drawable.pic20,
+            R.drawable.pic21,
+            R.drawable.pic22,
+            R.drawable.pic23,
+            R.drawable.pic24,
+            R.drawable.pic25,
+            R.drawable.pic26,
+            R.drawable.pic27,
+            R.drawable.pic28,
+            R.drawable.pic29,
+            R.drawable.pic30,
+            R.drawable.pic31
+
     };
 
     Button height,waist,hip,next;
     ImageView imageView;
-    float waistLocation;
-    float hipLocation;
+    float waistLocation = 0;
+    float hipLocation = 0;
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -79,19 +104,19 @@ public class manager extends AppCompatActivity {
             }
         });
 
-        imageView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                int[] viewCoords = new int[2];
-                imageView.getLocationOnScreen(viewCoords);
-                float touchX = event.getX();
-                float touchY = event.getY();
-
-                System.out.println("x is " + touchX);
-                System.out.println("y is " + touchY);
-                return true;
-            }
-        });
+//        imageView.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                int[] viewCoords = new int[2];
+//                imageView.getLocationOnScreen(viewCoords);
+//                float touchX = event.getX();
+//                float touchY = event.getY();
+//
+//                System.out.println("x is " + touchX);
+//                System.out.println("y is " + touchY);
+//                return true;
+//            }
+//        });
 
         hip.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -158,9 +183,10 @@ public class manager extends AppCompatActivity {
 
         for (int i = 0; i< contourList.size();i++){
             for(int j = 0; j < contourList.get(i).toList().size();j++){
-                if( originalbitmap.getHeight() * 3 / 8.0 <  contourList.get(i).toList().get(j).y && originalbitmap.getHeight() * 4 / 8.0 > contourList.get(i).toList().get(j).y ){
+                if( originalbitmap.getHeight() * 3.0 / 8.0 <  contourList.get(i).toList().get(j).y && originalbitmap.getHeight() * 4.0 / 8.0 > contourList.get(i).toList().get(j).y ){
                     if(left > contourList.get(i).toList().get(j).x){
                         left = (float) contourList.get(i).toList().get(j).x;
+                        waistLocation = (float) contourList.get(i).toList().get(j).y;
                     }
                     if(right < contourList.get(i).toList().get(j).x ) {
                         right = (float) contourList.get(i).toList().get(j).x;
@@ -217,7 +243,7 @@ public class manager extends AppCompatActivity {
 
         for (int i = 0; i< contourList.size();i++){
             for(int j = 0; j < contourList.get(i).toList().size();j++){
-                if( originalbitmap.getHeight() * 4 / 8.0 <  contourList.get(i).toList().get(j).y && originalbitmap.getHeight() * 5 / 8.0 > contourList.get(i).toList().get(j).y ){
+                if( originalbitmap.getHeight() * 4.0 / 8.0 <  contourList.get(i).toList().get(j).y && originalbitmap.getHeight() * 5.0 / 8.0 > contourList.get(i).toList().get(j).y ){
                     if(left > contourList.get(i).toList().get(j).x){
                         left = (float) contourList.get(i).toList().get(j).x;
                         hipLocation = (float) contourList.get(i).toList().get(j).y;
