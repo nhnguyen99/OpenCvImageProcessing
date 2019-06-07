@@ -3,6 +3,7 @@ package com.example.finalsolution;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -74,6 +75,7 @@ public class programmer extends AppCompatActivity {
 
     };
     int current_image;
+    Button next;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,7 +84,7 @@ public class programmer extends AppCompatActivity {
         Spinner spinner = findViewById(R.id.spinner1);
         apply = findViewById(R.id.apply);
         imageView = findViewById(R.id.imageView);
-
+        next = findViewById(R.id.next);
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -98,15 +100,25 @@ public class programmer extends AppCompatActivity {
             }
         });
 
-        imageView.setOnTouchListener(new View.OnTouchListener() {
+        next.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
+            public void onClick(View v) {
                 current_image++;
                 current_image = current_image % images.length;
                 imageView.setImageResource(images[current_image]);
-                return true;
             }
         });
+
+
+//        imageView.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                current_image++;
+//                current_image = current_image % images.length;
+//                imageView.setImageResource(images[current_image]);
+//                return true;
+//            }
+//        });
 
         apply.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -149,6 +161,9 @@ public class programmer extends AppCompatActivity {
                         break;
                     case 10:
                         k_Mean();
+                        break;
+                    case 11:
+                        gradientThresholdContours();
                         break;
                         default:
                             setOriginal();
@@ -422,29 +437,34 @@ public class programmer extends AppCompatActivity {
 
 
     public void k_Mean(){
+        Mat rgba = new Mat();
+        Mat mHSV = new Mat();
 
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(),images[current_image]);
-        Mat img = Mat.zeros(bitmap.getHeight(), bitmap.getWidth(), CvType.CV_8UC3);
+        Bitmap outputBitmap = Bitmap.createBitmap(bitmap.getWidth(),bitmap.getHeight(), Bitmap.Config.RGB_565);
+        Utils.bitmapToMat(bitmap,rgba);
 
-//        Imgproc.rectangle(img, new Point(0, 0), new Point(100, 200), new Scalar(0, 255, 0), -1);
-//        Imgproc.rectangle(img, new Point(100, 0), new Point(200, 200), new Scalar(0, 0, 255), -1);
+        //must convert to 3 channel image
+        Imgproc.cvtColor(rgba, mHSV, Imgproc.COLOR_RGBA2RGB,3);
+        Imgproc.cvtColor(rgba, mHSV, Imgproc.COLOR_RGB2HSV,3);
+        Mat clusters = cluster(mHSV, 3).get(0);
+        Utils.matToBitmap(clusters,outputBitmap);
 
-        Mat clusters = cluster(img, 2).get(0);
-
-        Utils.matToBitmap(img,bitmap);
-        imageView.setImageBitmap(bitmap);
-
+        imageView.setImageBitmap(outputBitmap);
     }
 
-    public static List<Mat> cluster(Mat cutout, int k) {
+
+    public  List<Mat> cluster(Mat cutout, int k) {
         Mat samples = cutout.reshape(1, cutout.cols() * cutout.rows());
         Mat samples32f = new Mat();
         samples.convertTo(samples32f, CvType.CV_32F, 1.0 / 255.0);
 
         Mat labels = new Mat();
-        TermCriteria criteria = new TermCriteria(TermCriteria.COUNT, 100, 1);
+        //criteria means the maximum loop
+        TermCriteria criteria = new TermCriteria(TermCriteria.COUNT, 20, 1);
         Mat centers = new Mat();
         Core.kmeans(samples32f, k, labels, criteria, 1, Core.KMEANS_PP_CENTERS, centers);
+
         return showClusters(cutout, labels, centers);
     }
 
@@ -476,19 +496,9 @@ public class programmer extends AppCompatActivity {
         return clusters;
     }
 
-    private void thresholdCannyContours(){
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(),images[current_image]);
-        Mat Rgba = new Mat();
-        Mat ostuMat = new Mat();
+    private void gradientThresholdContours(){
 
-        Utils.bitmapToMat(bitmap,Rgba);
-        Imgproc.cvtColor(Rgba,ostuMat,Imgproc.COLOR_RGBA2GRAY,0);
-        Imgproc.threshold(ostuMat,ostuMat,100,255,Imgproc.THRESH_BINARY);
-
-
-        Bitmap outputhBitmap = Bitmap.createBitmap(bitmap.getWidth(),bitmap.getHeight(),Bitmap.Config.RGB_565);
-        Utils.matToBitmap(ostuMat,outputhBitmap);
-        imageView.setImageBitmap(outputhBitmap);
     }
+
 
 }

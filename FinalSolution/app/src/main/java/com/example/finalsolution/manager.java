@@ -180,7 +180,6 @@ public class manager extends AppCompatActivity {
         Mat contours = new Mat();
         contours.create(cannyEdges.rows(),cannyEdges.cols(), CvType.CV_8UC3);
 
-
         for (int i = 0; i< contourList.size();i++){
             for(int j = 0; j < contourList.get(i).toList().size();j++){
                 if( originalbitmap.getHeight() * 3.0 / 8.0 <  contourList.get(i).toList().get(j).y && originalbitmap.getHeight() * 4.0 / 8.0 > contourList.get(i).toList().get(j).y ){

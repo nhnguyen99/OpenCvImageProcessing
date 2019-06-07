@@ -20,6 +20,7 @@
         <item>dilate</item>
         <item>gradient + threshold</item>
         <item>canny contours + threshold</item>
-        <item>threshold + CannyContours</item>
+        <item>K - mean</item>
+        <item>gradient + threshold + contours</item>
     </string-array>
 </resources>
