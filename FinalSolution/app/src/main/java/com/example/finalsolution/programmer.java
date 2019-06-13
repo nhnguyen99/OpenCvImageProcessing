@@ -3,11 +3,8 @@ package com.example.finalsolution;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -23,6 +20,7 @@ import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
+import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.core.TermCriteria;
@@ -165,6 +163,9 @@ public class programmer extends AppCompatActivity {
                     case 11:
                         gradientThresholdContours();
                         break;
+                    case 12:
+                        cutImage();
+                        break;
                         default:
                             setOriginal();
                 }
@@ -176,6 +177,8 @@ public class programmer extends AppCompatActivity {
 
     private void setOriginal(){
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(),images[current_image]);
+        System.out.println("bit map height is " + bitmap.getHeight() );
+        System.out.println("bit map width is " + bitmap.getWidth() );
         imageView.setImageBitmap(bitmap);
     }
 
@@ -454,7 +457,7 @@ public class programmer extends AppCompatActivity {
     }
 
 
-    public  List<Mat> cluster(Mat cutout, int k) {
+    public static List<Mat> cluster(Mat cutout, int k) {
         Mat samples = cutout.reshape(1, cutout.cols() * cutout.rows());
         Mat samples32f = new Mat();
         samples.convertTo(samples32f, CvType.CV_32F, 1.0 / 255.0);
@@ -471,6 +474,8 @@ public class programmer extends AppCompatActivity {
     private static List<Mat> showClusters (Mat cutout, Mat labels, Mat centers) {
         centers.convertTo(centers, CvType.CV_8UC1, 255.0);
         centers.reshape(3);
+
+        System.out.println(labels + "labels");
 
         List<Mat> clusters = new ArrayList<Mat>();
         for(int i = 0; i < centers.rows(); i++) {
@@ -492,6 +497,7 @@ public class programmer extends AppCompatActivity {
                 rows++;
             }
         }
+
         System.out.println(counts);
         return clusters;
     }
@@ -500,5 +506,35 @@ public class programmer extends AppCompatActivity {
 
     }
 
+
+    private void cutImage(){
+        Bitmap originalbitmap = BitmapFactory.decodeResource(getResources(),images[current_image]);
+        Mat image_original = new Mat();
+        Utils.bitmapToMat(originalbitmap,image_original);
+
+        Point p1 = new Point(0,500);
+        Point p2 = new Point(500,500);
+        Point p3 = new Point(0,1000);
+        Point p4 = new Point(500, 1000);
+
+        Rect rectCrop = new Rect(0,(int) (originalbitmap.getHeight() * 2.5/8.0) , originalbitmap.getWidth(),500);
+        Mat image_output= image_original.submat(rectCrop);
+
+        //apply k-mean
+        Mat rgba = image_output;
+        Mat mHSV = new Mat();
+
+        //must convert to 3 channel image
+        Imgproc.cvtColor(rgba, mHSV, Imgproc.COLOR_RGBA2RGB,3);
+        Imgproc.cvtColor(rgba, mHSV, Imgproc.COLOR_RGB2HSV,3);
+        Mat clusters = cluster(mHSV, 3).get(0);
+
+
+
+
+        Bitmap outputBitmap = Bitmap.createBitmap(rectCrop.width,rectCrop.height, Bitmap.Config.RGB_565);
+        Utils.matToBitmap(clusters,outputBitmap);
+        imageView.setImageBitmap(outputBitmap);
+    }
 
 }
