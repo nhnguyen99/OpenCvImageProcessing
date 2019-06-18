@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public class manager extends AppCompatActivity {
     int current_image;
@@ -205,7 +206,7 @@ public class manager extends AppCompatActivity {
         //criteria means the maximum loop
         TermCriteria criteria = new TermCriteria(TermCriteria.COUNT, 100, 1);
         Mat centers = new Mat();
-        Core.kmeans(samples32f, k, labels, criteria, 1, Core.KMEANS_PP_CENTERS, centers);//set attempts 2 make sure cluster correct
+        Core.kmeans(samples32f, k, labels, criteria, 6, Core.KMEANS_PP_CENTERS, centers);//set attempts 2 make sure cluster correct
 
         return showClusters(cutout, labels, centers);
     }
@@ -233,10 +234,6 @@ public class manager extends AppCompatActivity {
             for(int x = 0; x < cutout.cols(); x++) {
                 //find label change point
                 int label = (int)labels.get(rows, 0)[0];
-//                int r = (int)centers.get(label, 2)[0];
-//                int g = (int)centers.get(label, 1)[0];
-//                int b = (int)centers.get(label, 0)[0];
-
                 counts.put(label, counts.get(label) +1 );
                 clusters.get(label).put(y, x, 255, 255, 255);
                 rows++;
@@ -245,7 +242,6 @@ public class manager extends AppCompatActivity {
                     System.out.println("min is "+ min);
                     System.out.println("max is " + max);
                 }
-               // System.out.println("label " + label);
             }
         }
         System.out.println("label col"+labels.cols());
